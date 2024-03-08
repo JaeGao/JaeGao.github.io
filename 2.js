@@ -4,7 +4,8 @@ let creatures = [];
 let orbitCenter;
 
 function setup() {
-  createCanvas(800, 800);
+  let myCanvas = createCanvas(800, 800);
+    myCanvas.parent("p5-canvas-container");
   colorMode(RGB);
   pixelDensity(1);
   frameRate(30);

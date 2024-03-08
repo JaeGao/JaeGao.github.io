@@ -62,6 +62,8 @@ body {
 /* Sketch placeholder */
 #p5-canvas-container img {
     width: 800px;
+    position: relative;
+    margin: auto;
 }
 
 
