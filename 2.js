@@ -17,7 +17,7 @@ function setup() {
   creatures.push(new Creature(createVector(random(width), random(height)), color(0, 191, 255)));
 
   orbitShapeSlider = createSlider(0, 2, 1, 0.1);
-  orbitShapeSlider.position(10, height + 5);
+  orbitShapeSlider.position(width-250, height+150);
 }
 
 function draw() {
