@@ -138,7 +138,8 @@ class Creature {
     this.color = col;
     this.maxSpeed = 10;
     this.maxForce = 0.5;
-    this.radius = 10; // Assuming a radius of 10 pixels for the creature
+    this.radius = 10; // This will also influence the size of the triangles.
+    this.rotation = 0; // Initial rotation for the triangles.
   }
 
   update() {
@@ -147,8 +148,43 @@ class Creature {
     this.position.add(this.velocity);
     this.acceleration.mult(0);
 
-    // Bounce off edges
-    this.bounceOffEdges();
+    // Update rotations for counter-rotating triangles
+    this.rotation += 0.05; 
+  }
+
+  draw() {
+    push(); // Start a new drawing state
+    translate(this.position.x, this.position.y); // Move to the creature's position
+
+    // Draw first triangle (counter-clockwise rotation)
+    rotate(this.rotation);
+    noFill();
+    stroke(this.color);
+    strokeWeight(3);
+    this.drawTriangle(this.radius);
+
+    // Draw second triangle (clockwise rotation)
+    rotate(-2 * this.rotation); // Counter-rotate twice the angle for difference
+    noFill();
+    stroke(this.color);
+    strokeWeight(3);
+    this.drawTriangle(this.radius);
+
+    // Draw surrounding circle with thin black border
+
+    
+    pop(); // Restore original drawing state
+  }
+
+  drawTriangle(radius) {
+    // Calculate the height of the triangle to make the triangles equilateral
+    let sideLength = radius * 2; // Approximation of side length based on radius
+    let triangleHeight = sqrt(3) / 2 * sideLength;
+    beginShape();
+    vertex(-sideLength / 2, triangleHeight / 2);
+    vertex(sideLength / 2, triangleHeight / 2);
+    vertex(0, -triangleHeight / 2);
+    endShape(CLOSE);
   }
 
   applyForce(force) {
@@ -184,9 +220,5 @@ class Creature {
     }
   }
 
-  draw() {
-    fill(this.color);
-    noStroke();
-    ellipse(this.position.x, this.position.y, this.radius * 2, this.radius * 2);
-  }
+ 
 }
