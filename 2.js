@@ -8,9 +8,10 @@ const sizeUpdateInterval = 250; // Update shapes' sizes every 1000 milliseconds 
 
 
 function setup() {
-  let myCanvas = createCanvas(800, 800);
+  let myCanvas = createCanvas(1000, 1000);
   myCanvas.parent("p5-canvas-container");
   colorMode(RGB);
+ 
   pixelDensity(1);
   frameRate(30);
 
@@ -29,7 +30,7 @@ function setup() {
 
 function draw() {
   background(0);
-
+  drawGlowingCursor();
   // Time-based size update for shapes
   if (millis() - lastUpdateTime > sizeUpdateInterval) {
     shapes.forEach(shape => {
@@ -53,6 +54,15 @@ function draw() {
     creature.bounceOffEdges();
     creature.draw();
   });
+}
+function drawGlowingCursor() {
+  push(); // Save current drawing settings
+  noStroke(); // No border for the glowing effect
+  fill(255, 255, 0, 150); // Semi-transparent yellow
+  blendMode(ADD); // Use ADD blend mode for the glowing effect
+  ellipse(mouseX, mouseY, 50, 50); // Draw the glowing circle at the mouse position
+  blendMode(BLEND); // Reset blendMode to default
+  pop(); // Restore original drawing settings
 }
 function initShapes() {
   shapes = [];
@@ -143,15 +153,43 @@ class Creature {
   }
 
   update() {
+    this.repelFromMouse(mouseX, mouseY);
     this.velocity.add(this.acceleration);
     this.velocity.limit(this.maxSpeed);
     this.position.add(this.velocity);
     this.acceleration.mult(0);
-
+    let alignment = this.align(creatures);
+    this.applyForce(alignment);
     // Update rotations for counter-rotating triangles
     this.rotation += 0.05; 
   }
-
+  repelFromMouse(mx, my) {
+    let mousePos = createVector(mx, my);
+    let d = dist(this.position.x, this.position.y, mousePos.x, mousePos.y);
+    if (d < 50) { // Repel if within 50 pixels of the mouse cursor
+      let force = p5.Vector.sub(this.position, mousePos).normalize().mult(this.maxForce * 5);
+      this.applyForce(force);
+    }
+  }
+  align(creatures) {
+    let perceptionRadius = 50;
+    let steering = createVector();
+    let total = 0;
+    for (let other of creatures) {
+      let d = dist(this.position.x, this.position.y, other.position.x, other.position.y);
+      if (other != this && d < perceptionRadius) {
+        steering.add(other.velocity);
+        total++;
+      }
+    }
+    if (total > 0) {
+      steering.div(total);
+      steering.setMag(this.maxSpeed);
+      steering.sub(this.velocity);
+      steering.limit(this.maxForce);
+    }
+    return steering;
+  }
   draw() {
     push(); // Start a new drawing state
     translate(this.position.x, this.position.y); // Move to the creature's position
