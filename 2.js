@@ -2,10 +2,14 @@ let orbitShapeSlider;
 let shapes = [];
 let creatures = [];
 let orbitCenter;
+let orbitShapeSliderValue = 1;
+let lastUpdateTime = 0;
+const sizeUpdateInterval = 250; // Update shapes' sizes every 1000 milliseconds (1 second)
+
 
 function setup() {
   let myCanvas = createCanvas(800, 800);
-    myCanvas.parent("p5-canvas-container");
+  myCanvas.parent("p5-canvas-container");
   colorMode(RGB);
   pixelDensity(1);
   frameRate(30);
@@ -17,12 +21,24 @@ function setup() {
   creatures.push(new Creature(createVector(random(width), random(height)), color(0, 191, 255)));
 
   orbitShapeSlider = createSlider(0, 2, 1, 0.1);
-  orbitShapeSlider.position(width-250, height+150);
+  orbitShapeSlider.position(width - 250, height + 150);
+
+  // Initial size update
+  lastUpdateTime = millis();
 }
 
 function draw() {
   background(0);
 
+  // Time-based size update for shapes
+  if (millis() - lastUpdateTime > sizeUpdateInterval) {
+    shapes.forEach(shape => {
+      shape.updateSize();
+    });
+    lastUpdateTime = millis();
+  }
+
+  orbitShapeSliderValue = lerp(orbitShapeSliderValue, orbitShapeSlider.value(), 0.05);
   shapes.forEach(shape => {
     shape.update();
     shape.draw();
@@ -38,13 +54,12 @@ function draw() {
     creature.draw();
   });
 }
-
 function initShapes() {
   shapes = [];
   for (let i = 0; i < 100; i++) {
     let x = random(width);
     let y = random(height);
-    let c = random([color(34, 54, 89), color(165, 100, 100)]);
+    let c = random([color(34, 54, 159), color(205, 100, 100),color(130, 120, 160)]);
     let type = random(['ellipse', 'rect', 'triangle']);
     shapes.push(new Shape(x, y, type, c));
   }
@@ -59,12 +74,40 @@ class Shape {
     this.orbitRadius = random(100, 300);
     this.angle = random(TWO_PI);
     this.angleVel = random(-0.05, 0.05);
+    // Initialize size properties and targets for smooth transitions
+    this.sizeWidth = 20 * random();
+    this.sizeHeight = 20 * random();
+    this.targetSizeWidth = this.sizeWidth;
+    this.targetSizeHeight = this.sizeHeight;
+    if (this.type === 'triangle') {
+      this.triangleHeight = (sqrt(3) / 2) * this.sizeWidth;
+      this.targetTriangleHeight = this.triangleHeight;
+    } else {
+      this.triangleHeight = 0;
+      this.targetTriangleHeight = 0;
+    }
   }
 
   update() {
     this.angle += this.angleVel;
-    this.x = orbitCenter.x + cos(this.angle) * this.orbitRadius * orbitShapeSlider.value();
-    this.y = orbitCenter.y + sin(this.angle) * this.orbitRadius * orbitShapeSlider.value();
+    this.x = orbitCenter.x + cos(this.angle) * this.orbitRadius * orbitShapeSliderValue;
+    this.y = orbitCenter.y + sin(this.angle) * this.orbitRadius * orbitShapeSliderValue;
+
+    // Smoothly transition size properties towards their targets
+    this.sizeWidth = lerp(this.sizeWidth, this.targetSizeWidth, 0.1);
+    this.sizeHeight = lerp(this.sizeHeight, this.targetSizeHeight, 0.1);
+    if (this.type === 'triangle') {
+      this.triangleHeight = lerp(this.triangleHeight, this.targetTriangleHeight, 0.1);
+    }
+  }
+
+  updateSize() {
+    // Set new target sizes for smooth transitions
+    this.targetSizeWidth = 20 * random();
+    this.targetSizeHeight = 20 * random();
+    if (this.type === 'triangle') {
+      this.targetTriangleHeight = (sqrt(3) / 2) * this.targetSizeWidth;
+    }
   }
 
   draw() {
@@ -72,17 +115,16 @@ class Shape {
     noStroke();
     switch (this.type) {
       case 'ellipse':
-        ellipse(this.x, this.y, 20, 20);
+        ellipse(this.x, this.y, this.sizeWidth, this.sizeHeight);
         break;
       case 'rect':
-        rect(this.x - 10, this.y - 10, 20, 20);
+        rect(this.x - 10, this.y - 10, this.sizeWidth, this.sizeHeight);
         break;
       case 'triangle':
-        const h = (sqrt(3) / 2) * 20;
         triangle(
-          this.x - 10, this.y + h / 2,
-          this.x + 10, this.y + h / 2,
-          this.x, this.y - h / 2
+          this.x - 10, this.y + this.triangleHeight / 2,
+          this.x + 10, this.y + this.triangleHeight / 2,
+          this.x, this.y - this.triangleHeight / 2
         );
         break;
     }
