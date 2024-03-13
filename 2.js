@@ -8,7 +8,7 @@ const sizeUpdateInterval = 250; // Update shapes' sizes every 1000 milliseconds 
 
 
 function setup() {
-  let myCanvas = createCanvas(1000, 1000);
+  let myCanvas = createCanvas(1000, 700);
   myCanvas.parent("p5-canvas-container");
   colorMode(RGB);
  
@@ -58,7 +58,14 @@ function draw() {
 function drawGlowingCursor() {
   push(); // Save current drawing settings
   noStroke(); // No border for the glowing effect
-  fill(255, 255, 0, 150); // Semi-transparent yellow
+
+  // Check if the mouse is pressed
+  if (mouseIsPressed) {
+    fill(255); // Bright white color
+  } else {
+    fill(255, 255, 0, 150); // Semi-transparent yellow for the default state
+  }
+
   blendMode(ADD); // Use ADD blend mode for the glowing effect
   ellipse(mouseX, mouseY, 50, 50); // Draw the glowing circle at the mouse position
   blendMode(BLEND); // Reset blendMode to default
