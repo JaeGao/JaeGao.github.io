@@ -11,7 +11,7 @@ function setup() {
   let myCanvas = createCanvas(1000, 700);
   myCanvas.parent("p5-canvas-container");
   colorMode(RGB);
- 
+
   pixelDensity(1);
   frameRate(30);
 
@@ -21,8 +21,9 @@ function setup() {
   creatures.push(new Creature(createVector(random(width), random(height)), color(255, 20, 147)));
   creatures.push(new Creature(createVector(random(width), random(height)), color(0, 191, 255)));
 
-  orbitShapeSlider = createSlider(0, 2, 1, 0.1);
-  orbitShapeSlider.position(width - 250, height + 150);
+  orbitShapeSlider = document.getElementById('orbitShapeSlider');
+  // orbitShapeSlider.position(width - 250, height + 150);
+  //orbitShapeSlider.parent("p5-canvas-container");
 
   // Initial size update
   lastUpdateTime = millis();
@@ -39,7 +40,7 @@ function draw() {
     lastUpdateTime = millis();
   }
 
-  orbitShapeSliderValue = lerp(orbitShapeSliderValue, orbitShapeSlider.value(), 0.05);
+  orbitShapeSliderValue = lerp(orbitShapeSliderValue, orbitShapeSlider.value, 0.05);
   shapes.forEach(shape => {
     shape.update();
     shape.draw();
@@ -76,7 +77,7 @@ function initShapes() {
   for (let i = 0; i < 100; i++) {
     let x = random(width);
     let y = random(height);
-    let c = random([color(34, 54, 159), color(205, 100, 100),color(130, 120, 160)]);
+    let c = random([color(34, 54, 159), color(205, 100, 100), color(130, 120, 160)]);
     let type = random(['ellipse', 'rect', 'triangle']);
     shapes.push(new Shape(x, y, type, c));
   }
@@ -168,12 +169,13 @@ class Creature {
     let alignment = this.align(creatures);
     this.applyForce(alignment);
     // Update rotations for counter-rotating triangles
-    this.rotation += 0.05; 
+    this.rotation += 0.05;
   }
   repelFromMouse(mx, my) {
     let mousePos = createVector(mx, my);
     let d = dist(this.position.x, this.position.y, mousePos.x, mousePos.y);
-    if (d < 50) { // Repel if within 50 pixels of the mouse cursor
+
+    if (d < 100 && mouseIsPressed) { // Repel if within 50 pixels of the mouse cursor
       let force = p5.Vector.sub(this.position, mousePos).normalize().mult(this.maxForce * 5);
       this.applyForce(force);
     }
@@ -217,7 +219,7 @@ class Creature {
 
     // Draw surrounding circle with thin black border
 
-    
+
     pop(); // Restore original drawing state
   }
 
@@ -265,5 +267,5 @@ class Creature {
     }
   }
 
- 
+
 }

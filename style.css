@@ -25,7 +25,7 @@ body {
 }
 
 .red {
-  color: coral;
+  color: #6b72bd;
 }
 
 .green {
@@ -60,9 +60,9 @@ body {
 }
 
 /* Sketch placeholder */
-#p5-canvas-container script{
-  width:1000
-
+#p5-canvas-container {
+  width: 1000px;
+  margin: auto;
 }
 
 
@@ -82,4 +82,86 @@ body {
 #home-button a:hover {
   background-color: coral;
   color: black;
+}
+
+/* Slider container for specific width and auto margin */
+.slider-container {
+  width: 800px;
+  /* Set width as requested */
+  margin: 20px auto;
+  /* Center the slider with auto margins */
+}
+
+/* Styling for the slider track */
+input[type=range] {
+  -webkit-appearance: none;
+  /* Remove default appearance for Webkit browsers */
+  width: 100%;
+  /* Full width of the container */
+  height: 8px;
+  /* Height of the track */
+  border-radius: 4px;
+  /* Rounded corners for the track */
+  background: #3F51B5;
+  /* Dark indigo background for the track */
+  outline: none;
+  /* Remove the outline to match Material Design standards */
+  opacity: 0.7;
+  /* Slightly transparent for a subtle look, adjust as needed */
+  transition: opacity .2s;
+  /* Smooth transition for hover effects */
+}
+
+/* Hover effect for the slider */
+input[type=range]:hover {
+  opacity: 1;
+  /* Full opacity on hover */
+}
+
+/* Styling for the slider thumb (handle) */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* Remove default appearance */
+  appearance: none;
+  width: 24px;
+  /* Width of the thumb */
+  height: 24px;
+  /* Height of the thumb */
+  border-radius: 50%;
+  /* Circular shape */
+  background: #1A237E;
+  /* Darker shade of indigo for the thumb */
+  cursor: pointer;
+  /* Cursor indicates the thumb can be moved */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  /* Shadow for depth, following Material Design */
+  transition: background 0.3s ease;
+  /* Smooth background color transition */
+}
+
+/* For Firefox */
+input[type=range]::-moz-range-thumb {
+  width: 24px;
+  /* Width of the thumb */
+  height: 24px;
+  /* Height of the thumb */
+  border-radius: 50%;
+  /* Circular shape */
+  background: #1A237E;
+  /* Darker shade of indigo for the thumb */
+  cursor: pointer;
+  /* Cursor indicates the thumb can be moved */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  /* Shadow for depth */
+}
+
+/* Hover effect for the slider thumb for added interactivity (optional) */
+input[type=range]::-webkit-slider-thumb:hover {
+  background: #0D47A1;
+  /* Slightly lighter or different shade when hovering over the thumb */
+}
+
+input[type=range]::-moz-range-thumb:hover {
+  background: #0D47A1;
+  /* Slightly lighter or different shade when hovering over the thumb */
 }
